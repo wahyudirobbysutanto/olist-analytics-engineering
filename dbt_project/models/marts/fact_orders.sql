@@ -9,10 +9,16 @@ dim_customers AS (
 ),
 dim_products AS (
     SELECT * FROM {{ ref('dim_products') }}
+),
+dim_sellers AS (
+    SELECT * FROM {{ ref('dim_sellers') }}
 )
 SELECT
     o.order_id,
     oi.order_item_id,
+    s.seller_id,
+    s.seller_city,
+    s.seller_state,
     o.customer_id,
     c.customer_city,
     c.customer_state,
@@ -27,3 +33,4 @@ FROM olist__order_items oi
 INNER JOIN olist__orders o ON o.order_id = oi.order_id
 INNER JOIN dim_customers c ON o.customer_id = c.customer_id
 INNER JOIN dim_products p ON oi.product_id = p.product_id
+INNER JOIN dim_sellers s ON oi.seller_id = s.seller_id

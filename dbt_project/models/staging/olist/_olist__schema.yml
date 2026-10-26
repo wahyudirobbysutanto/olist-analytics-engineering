@@ -1,6 +1,26 @@
 version: 2
 
 models:
+  - name: stg_olist__payments
+    columns:
+      - name: order_id
+        tests:
+          - not_null
+      - name: payment_sequential
+      - name: payment_type
+      - name: payment_installments
+      - name: payment_value
+        tests:
+          - not_null 
+  - name: stg_olist__sellers
+    columns:
+      - name: seller_id
+        tests:
+          - unique
+          - not_null
+      - name: seller_zip_code_prefix
+      - name: seller_city
+      - name: seller_state
   - name: stg_olist__customers
     columns:
       - name: customer_id

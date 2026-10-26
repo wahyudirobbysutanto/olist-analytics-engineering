@@ -1,0 +1,59 @@
+version: 2
+
+models:
+  - name: dim_products
+    description: "This table contains all products"
+    columns:
+      - name: product_id
+        tests:
+          - unique
+          - not_null
+      - name: product_category_name
+      - name: product_weight_g
+      - name: product_length_cm
+      - name: product_height_cm
+      - name: product_width_cm
+  - name: dim_customers
+    description: "This table contains all customers"
+    columns:
+      - name: customer_id
+        tests:
+          - unique
+          - not_null
+      - name: customer_unique_id
+      - name: customer_zip_code_prefix
+      - name: customer_city
+      - name: customer_state
+  - name: fact_orders
+    description: "This table contains the fact data for orders."
+    columns:
+      - name: order_id
+        tests:
+          - not_null
+      - name: order_item_id
+        tests:
+          - not_null
+      - name: customer_id
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_customers')
+                field: customer_id
+      - name: customer_city
+      - name: customer_state
+      - name: product_id
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_products')
+                field: product_id
+      - name: product_category_name
+      - name: order_status
+      - name: order_purchase_timestamp
+      - name: price
+        tests:
+          - not_null
+      - name: freight_value
+      - name: total_amount

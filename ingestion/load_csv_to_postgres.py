@@ -24,7 +24,9 @@ def main():
     # Mapping nama file CSV ke nama tabel di Postgres
     files_to_load = {
         "olist_orders_dataset.csv": "orders",
-        "olist_customers_dataset.csv": "customers"
+        "olist_customers_dataset.csv": "customers",
+        "olist_products_dataset.csv": "products",
+        "olist_order_items_dataset.csv": "order_items"
     }
 
     print("Start olist ingestion data process")
@@ -40,12 +42,23 @@ def main():
         df = pd.read_csv(file_path)
 
         print(f"⬆️  Uploading {len(df)} rows to raw.{table_name}...")
+
+        with engine.begin() as conn:
+            conn.execute(text(f"""
+                DO $$
+                BEGIN
+                    IF to_regclass('raw.{table_name}') IS NOT NULL THEN
+                        EXECUTE 'TRUNCATE TABLE raw.{table_name} CASCADE';
+                    END IF;
+                END $$;
+            """))
+
         # Inserting into raw schema, replace table if it already exists (for development phase)
         df.to_sql(
             name=table_name,
             con=engine,
             schema="raw",
-            if_exists="replace",
+            if_exists="append",
             index=False,
             method="multi",
             chunksize=1000

@@ -18,18 +18,18 @@ the questions that matter in production:
 
 
 ## Stack
-```
+
 | Layer | Tool |
 |---|---|
 | Ingestion | Python (pandas, SQLAlchemy) |
 | Warehouse | PostgreSQL |
 | Transformation | dbt-core + dbt-postgres |
-| Orchestration | Prefect 3.x |
+| Orchestration | Prefect 3.x (Phase 3) |
 | Data Quality | dbt tests + source freshness |
-| CI | GitHub Actions (phase 2) |
-```
+| CI/CD | GitHub Actions (Phase 3) |
+
 ## Project Structure
-```
+```text
 olist-analytics/
 ├── ingestion/ # CSV → PostgreSQL raw schema
 ├── dbt_project/
@@ -38,7 +38,7 @@ olist-analytics/
 │ │ └── marts/ # star schema (dim_, fact_)
 │ └── tests/ # custom data tests
 ├── data/ # local only, gitignored (see Data Setup)
-└── .github/workflows/ # CI (phase 2)
+└── .github/workflows/ # CI (phase 3)
 ```
 
 ## Data Setup
@@ -46,7 +46,7 @@ olist-analytics/
 CSV files are not committed to this repo (too large). Download from 
 [Kaggle](https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce) 
 and place in `data/`:
-```
+```text
 data/
 ├── olist_orders_dataset.csv
 ├── olist_customers_dataset.csv
@@ -65,3 +65,42 @@ Then run:
 python ingestion/load_csv_to_postgres.py
 cd dbt_project && dbt build
 ```
+
+## Roadmap
+
+- [x] **Phase 1: Staging Layer** (Orders, Customers)
+- [x] **Phase 2: Star Schema** (Add Products, Order Items, Dims, Facts)
+- [ ] **Phase 3: Complete Marts & CI/CD** (Sellers, Payments, GitHub Actions)
+- [ ] **Phase 4: Advanced Modeling & AI Agent** (Snapshots, AI schema generation)
+
+Progress is tracked via pull requests — each phase is a PR with design decisions and trade-offs documented.
+
+## Design Decisions
+
+*(Updated as phases complete. See PRs for full context.)*
+
+### Why sources, not seeds, for large CSVs?
+
+dbt seeds reload the full file on every build and don't support incremental loading. Files >1k rows belong in an ingestion script and are declared as sources.
+
+### Why staging views, marts tables?
+
+Staging models are cheap transformations (renames, casts) — views avoid redundant storage. Marts are queried by BI tools and benefit from materialization (tables).
+
+### Why TRUNCATE CASCADE instead of DROP TABLE in ingestion?
+
+When re-running the Python ingestion script, a standard `DROP TABLE` fails because dbt views depend on the raw tables. We use a conditional `TRUNCATE ... CASCADE` to clear data safely without breaking the downstream dbt dependencies.
+
+### Why Fact Table grain is at `order_item` level?
+
+One order can contain multiple items. To analyze product categories and freight values accurately, the `fact_orders` table must be at the `order_item` grain (112,650 rows), joined to `dim_products` and `dim_customers` (Star Schema).
+
+## License
+
+MIT — see LICENSE.
+
+## Author
+
+**Wahyudi Robby Sutanto** — Analytics Engineer
+- LinkedIn: [LinkedIn](https://www.linkedin.com/in/wahyudirs/)
+

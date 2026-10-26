@@ -97,7 +97,7 @@ One order can contain multiple items. To analyze product categories and freight 
 
 ## License
 
-MIT — see LICENSE.
+MIT — see [LICENSE](LICENSE).
 
 ## Author
 

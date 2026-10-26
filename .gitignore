@@ -1,7 +1,8 @@
-venv/
-__pycache__/
-*.log
+profiles.yml
 .env
-data/*.csv      ← jangan commit CSV besar
+data/
+*.csv
+venv/
 target/
 dbt_packages/
+logs/

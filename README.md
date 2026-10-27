@@ -1,5 +1,7 @@
 # Olist Analytics Engineering
 
+![Olist Executive Dashboard](images/olist_dashboard.png)
+
 Production-style analytics engineering project built on the 
 [Olist Brazilian E-Commerce dataset](https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce). 
 Demonstrates end-to-end ELT with dbt, PostgreSQL, and Prefect — including 

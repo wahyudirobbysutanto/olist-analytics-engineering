@@ -8,3 +8,5 @@ sources:
       - name: customers
       - name: products
       - name: order_items
+      - name: payments
+      - name: sellers

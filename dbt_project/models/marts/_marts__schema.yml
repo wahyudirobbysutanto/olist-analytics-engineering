@@ -1,6 +1,14 @@
 version: 2
 
 models:
+  - name: dim_sellers
+    columns:
+      - name: seller_id
+        tests:
+          - unique
+          - not_null
+      - name: seller_city
+      - name: seller_state
   - name: dim_products
     description: "This table contains all products"
     columns:
@@ -24,6 +32,15 @@ models:
       - name: customer_zip_code_prefix
       - name: customer_city
       - name: customer_state
+  - name: fct_payments
+    columns:
+      - name: order_id
+        tests:
+          - not_null
+      - name: payment_sequential
+      - name: payment_type
+      - name: payment_installments
+      - name: payment_value
   - name: fact_orders
     description: "This table contains the fact data for orders."
     columns:
@@ -33,6 +50,15 @@ models:
       - name: order_item_id
         tests:
           - not_null
+      - name: seller_id
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_sellers')
+                field: seller_id
+      - name: seller_city
+      - name: seller_state
       - name: customer_id
         tests:
           - not_null

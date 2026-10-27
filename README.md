@@ -72,8 +72,10 @@ cd dbt_project && dbt build
 
 - [x] **Phase 1: Staging Layer** (Orders, Customers)
 - [x] **Phase 2: Star Schema** (Add Products, Order Items, Dims, Facts)
-- [ ] **Phase 3: Complete Marts & CI/CD** (Sellers, Payments, GitHub Actions)
-- [ ] **Phase 4: Advanced Modeling & AI Agent** (Snapshots, AI schema generation)
+- [x] **Phase 3: Complete Marts & CI/CD** (Sellers, Payments, GitHub Actions)
+- [x] **Phase 4: Business Intelligence** (Metabase Dashboard & Data Visualization)
+- [ ] **Phase 5: Advanced Modeling & AI Agent** (Snapshots, AI schema generation)
+- [ ] **Phase 6: Cloud Migration** (BigQuery/Snowflake)
 
 Progress is tracked via pull requests — each phase is a PR with design decisions and trade-offs documented.
 

@@ -33,14 +33,15 @@ the questions that matter in production:
 ## Project Structure
 ```text
 olist-analytics/
-├── ingestion/ # CSV → PostgreSQL raw schema
+├── ingestion/          # CSV → PostgreSQL raw schema
 ├── dbt_project/
-│ ├── models/
-│ │ ├── staging/ # 1:1 with sources, minimal transforms
-│ │ └── marts/ # star schema (dim_, fact_)
-│ └── tests/ # custom data tests
-├── data/ # local only, gitignored (see Data Setup)
-└── .github/workflows/ # CI (phase 3)
+│   ├── models/
+│   │   ├── staging/    # 1:1 with sources, minimal transforms
+│   │   └── marts/      # star schema (dim_*, fact_*)
+│   ├── snapshots/      # SCD Type 2 history tracking
+│   └── tests/          # custom data tests
+├── data/               # local only, gitignored (see Data Setup)
+└── .github/workflows/  # CI/CD (GitHub Actions)
 ```
 
 ## Data Setup
@@ -74,7 +75,8 @@ cd dbt_project && dbt build
 - [x] **Phase 2: Star Schema** (Add Products, Order Items, Dims, Facts)
 - [x] **Phase 3: Complete Marts & CI/CD** (Sellers, Payments, GitHub Actions)
 - [x] **Phase 4: Business Intelligence** (Metabase Dashboard & Data Visualization)
-- [ ] **Phase 5: Advanced Modeling & AI Agent** (Snapshots, AI schema generation)
+- [x] **Phase 5A: Advanced Modeling** (Snapshots / SCD Type 2)
+- [ ] **Phase 5B: AI Agent Layer** (Auto-Insights & Text-to-SQL)
 - [ ] **Phase 6: Cloud Migration** (BigQuery/Snowflake)
 
 Progress is tracked via pull requests — each phase is a PR with design decisions and trade-offs documented.
@@ -98,6 +100,23 @@ When re-running the Python ingestion script, a standard `DROP TABLE` fails becau
 ### Why Fact Table grain is at `order_item` level?
 
 One order can contain multiple items. To analyze product categories and freight values accurately, the `fact_orders` table must be at the `order_item` grain (112,650 rows), joined to `dim_products` and `dim_customers` (Star Schema).
+
+### Why implement SCD Type 2 (dbt Snapshots) for products?
+
+Product categories can change over time. If we use a standard dbt model (which drops and recreates the table), historical transactions would incorrectly reflect the new category, causing inaccurate past reports. We use `dbt snapshot` to track history (SCD Type 2) so we can see what a product's category was at any given point in time.
+
+### How to handle fan-out in fact tables with SCD Type 2?
+
+When joining a fact table with an SCD Type 2 dimension, a standard join would multiply the rows (fan-out) because a single `product_id` can exist multiple times in the dimension table. To prevent this, we implement a **Point-in-Time Join** in `fact_orders`:
+
+```sql
+INNER JOIN dim_products p 
+  ON oi.product_id = p.product_id 
+  AND o.order_purchase_timestamp >= p.dbt_valid_from 
+  AND (o.order_purchase_timestamp < p.dbt_valid_to OR p.dbt_valid_to IS NULL)
+```
+
+This ensures that each transaction is joined ONLY to the product version that was active at the exact moment the order was placed, preserving data accuracy and revenue totals.
 
 ## License
 

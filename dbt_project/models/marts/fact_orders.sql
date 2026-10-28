@@ -33,4 +33,6 @@ FROM olist__order_items oi
 INNER JOIN olist__orders o ON o.order_id = oi.order_id
 INNER JOIN dim_customers c ON o.customer_id = c.customer_id
 INNER JOIN dim_products p ON oi.product_id = p.product_id
+    AND o.order_purchase_timestamp >= p.dbt_valid_from 
+    AND (o.order_purchase_timestamp < p.dbt_valid_to OR p.dbt_valid_to IS NULL)
 INNER JOIN dim_sellers s ON oi.seller_id = s.seller_id

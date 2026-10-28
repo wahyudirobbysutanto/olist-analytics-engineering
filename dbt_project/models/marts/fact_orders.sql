@@ -1,3 +1,11 @@
+{{
+  config(
+    materialized='incremental',
+    unique_key=['order_id', 'order_item_id'],
+    on_schema_change='append_new_columns'
+  )
+}}
+
 WITH olist__order_items AS (
     SELECT * FROM {{ ref('stg_olist__order_items') }}
 ),
@@ -23,6 +31,7 @@ SELECT
     c.customer_city,
     c.customer_state,
     oi.product_id,
+    p.product_sk,
     p.product_category_name,
     o.order_status,
     o.order_purchase_timestamp,
@@ -36,3 +45,6 @@ INNER JOIN dim_products p ON oi.product_id = p.product_id
     AND o.order_purchase_timestamp >= p.dbt_valid_from 
     AND (o.order_purchase_timestamp < p.dbt_valid_to OR p.dbt_valid_to IS NULL)
 INNER JOIN dim_sellers s ON oi.seller_id = s.seller_id
+{% if is_incremental() %}
+  WHERE o.order_purchase_timestamp > (SELECT MAX(order_purchase_timestamp) FROM {{ this }})
+{% endif %}

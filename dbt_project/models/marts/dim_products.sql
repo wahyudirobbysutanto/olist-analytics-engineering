@@ -2,7 +2,7 @@ WITH ref_products_snapshot AS (
     SELECT * FROM {{ ref('products_snapshot') }}
 )
 SELECT
-    dbt_scd_id,
+    {{ dbt_utils.generate_surrogate_key(['product_id', 'dbt_valid_from']) }} AS product_sk,
     product_id, 
     product_category_name, 
     product_weight_g, 

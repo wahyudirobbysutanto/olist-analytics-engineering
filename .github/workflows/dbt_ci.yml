@@ -40,6 +40,11 @@ jobs:
                 threads: 4
           EOF
 
+      - name: Install dbt packages
+        run: |
+          cd dbt_project
+          dbt deps
+
       - name: Run dbt parse (Validate Syntax)
         run: |
           cd dbt_project

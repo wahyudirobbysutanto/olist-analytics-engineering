@@ -12,9 +12,12 @@ models:
   - name: dim_products
     description: "This table contains all products"
     columns:
-      - name: product_id
+      - name: product_sk
         tests:
           - unique
+          - not_null
+      - name: product_id
+        tests:
           - not_null
       - name: product_category_name
       - name: product_weight_g
@@ -75,6 +78,13 @@ models:
               arguments:
                 to: ref('dim_products')
                 field: product_id
+      - name: product_sk
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_products')
+                field: product_sk
       - name: product_category_name
       - name: order_status
       - name: order_purchase_timestamp

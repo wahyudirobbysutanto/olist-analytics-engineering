@@ -29,18 +29,20 @@ the questions that matter in production:
 | Orchestration | Prefect 3.x (Phase 3) |
 | Data Quality | dbt tests + source freshness |
 | CI/CD | GitHub Actions (Phase 3) |
+| AI Agent | Streamlit, LangChain, Groq/Gemini |
 
 ## Project Structure
 ```text
 olist-analytics/
 ├── ingestion/          # CSV → PostgreSQL raw schema
 ├── dbt_project/
-│   ├── models/
-│   │   ├── staging/    # 1:1 with sources, minimal transforms
-│   │   └── marts/      # star schema (dim_*, fact_*)
+│   ├── models/         # staging, marts (star schema)
 │   ├── snapshots/      # SCD Type 2 history tracking
 │   └── tests/          # custom data tests
+├── ai_agent/           # Streamlit AI Data Analyst (Text-to-SQL)
+├── sql_script/         # Database setup scripts (Read-only user & AI history)
 ├── data/               # local only, gitignored (see Data Setup)
+├── images/             # Dashboard screenshots for README
 └── .github/workflows/  # CI/CD (GitHub Actions)
 ```
 
@@ -76,7 +78,7 @@ cd dbt_project && dbt build
 - [x] **Phase 3: Complete Marts & CI/CD** (Sellers, Payments, GitHub Actions)
 - [x] **Phase 4: Business Intelligence** (Metabase Dashboard & Data Visualization)
 - [x] **Phase 5A: Advanced Modeling** (Snapshots / SCD Type 2)
-- [ ] **Phase 5B: AI Agent Layer** (Auto-Insights & Text-to-SQL)
+- [x] **Phase 5B: AI Agent Layer** (Auto-Insights & Text-to-SQL)
 - [ ] **Phase 6: Cloud Migration** (BigQuery/Snowflake)
 
 Progress is tracked via pull requests — each phase is a PR with design decisions and trade-offs documented.
@@ -117,6 +119,27 @@ INNER JOIN dim_products p
 ```
 
 This ensures that each transaction is joined ONLY to the product version that was active at the exact moment the order was placed, preserving data accuracy and revenue totals.
+
+## 🤖 Phase 5B: The AI Data Analyst Agent
+
+To push the boundaries of modern Data Engineering, I integrated an **Agentic AI Layer** on top of the dbt data warehouse. 
+
+### Features:
+- **Text-to-SQL Engine:** Users can ask business questions in plain English, and the AI (powered by Gemini & Groq) writes and executes the SQL.
+- **Self-Correction QA Loop:** Implements a dual-agent architecture. AI 1 generates the SQL; AI 2 (QA) validates the results. If AI 2 rejects the SQL, it feeds the error back to AI 1 for automatic correction (up to 3 retries).
+- **Dynamic Schema Introspection:** The AI dynamically reads the PostgreSQL `information_schema` so it always knows the latest tables and columns without hardcoding.
+- **Smart Visualizations:** The AI determines the best chart type (bar, line, area) based on the data returned.
+- **Multi-Provider Resiliency:** Built with LangChain `with_fallbacks`, ensuring high availability by automatically switching from Google Gemini to Groq (Llama 3.3) if rate limits are hit.
+- **Interactive History:** All queries and auto-generated insights are saved to PostgreSQL and can be re-run from an interactive UI.
+
+### How to Run:
+1. Create the read-only AI user and history tables by running `sql_script/create_read_only_user.sql`.
+2. Add your `GEMINI_API_KEY` and `GROQ_API_KEY` to `.env`.
+3. Run the Streamlit app:
+```bash
+streamlit run ai_agent/app.py
+```
+
 
 ## License
 

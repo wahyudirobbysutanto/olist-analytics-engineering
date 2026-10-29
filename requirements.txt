@@ -7,3 +7,8 @@ dbt-core==1.12.6
 dbt-postgres==1.11.0
 
 prefect==3.8.8
+
+streamlit==1.45.0
+langchain==0.3.27
+langchain-google-genai==2.1.4
+langchain-groq==0.3.2

@@ -37,6 +37,8 @@ olist-analytics/
 ├── ingestion/          # CSV → PostgreSQL raw schema
 ├── dbt_project/
 │   ├── models/         # staging, marts (star schema)
+│   │   ├── staging/    # 1:1 with sources, minimal transforms
+│   │   └── marts/      # star schema (dim_*, fact_*)
 │   ├── snapshots/      # SCD Type 2 history tracking
 │   └── tests/          # custom data tests
 ├── ai_agent/           # Streamlit AI Data Analyst (Text-to-SQL)

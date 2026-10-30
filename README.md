@@ -2,6 +2,11 @@
 
 ![Olist Executive Dashboard](images/olist_dashboard.png)
 
+## 📊 Interactive Data Lineage
+[Click here to view the interactive dbt Docs & Lineage Graph](https://wahyudirobbysutanto.github.io/olist-analytics-engineering/)
+
+![dbt Lineage Graph](images/dbt_docs_lineage.png)
+
 Production-style analytics engineering project built on the 
 [Olist Brazilian E-Commerce dataset](https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce). 
 Demonstrates end-to-end ELT with dbt, PostgreSQL, and Prefect — including 
@@ -81,6 +86,7 @@ cd dbt_project && dbt build
 - [x] **Phase 4: Business Intelligence** (Metabase Dashboard & Data Visualization)
 - [x] **Phase 5A: Advanced Modeling** (Snapshots / SCD Type 2)
 - [x] **Phase 5B: AI Agent Layer** (Auto-Insights & Text-to-SQL)
+- [x] **Phase 5C: Data Lineage & Documentation** (dbt Docs hosted on GitHub Pages)
 - [ ] **Phase 6: Cloud Migration** (BigQuery/Snowflake)
 
 Progress is tracked via pull requests — each phase is a PR with design decisions and trade-offs documented.

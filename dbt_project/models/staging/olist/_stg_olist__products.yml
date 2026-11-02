@@ -1,0 +1,10 @@
+version: 2
+models:
+  - name: stg_olist__products
+    description: Staging model for Olist products
+    columns:
+      - name: product_id
+        description: Primary key for product
+        tests:
+          - unique
+          - not_null

@@ -1,11 +1,11 @@
-WITH src_payments AS (
-    SELECT *
+WITH source_data AS (
+    SELECT
+        order_id,
+        payment_sequential,
+        payment_type,
+        payment_installments,
+        payment_value
     FROM {{ source('olist', 'payments') }}
 )
-SELECT
-    order_id,
-    payment_sequential,
-    payment_type,
-    CAST(payment_installments AS DECIMAL(10,2)) AS payment_installments,
-    CAST(payment_value AS DECIMAL(10,2)) AS payment_value
-FROM src_payments
+SELECT *
+FROM source_data

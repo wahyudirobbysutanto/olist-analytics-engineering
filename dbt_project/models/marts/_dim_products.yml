@@ -1,0 +1,29 @@
+version: 2
+models:
+  - name: dim_products
+    description: "Dimension table for products with surrogate key and SCD2 timestamps."
+    columns:
+      - name: product_sk
+        description: "Surrogate key generated from product_id and dbt_valid_from to uniquely identify each product version."
+        tests:
+          - unique
+          - not_null
+      - name: product_id
+        description: "Natural identifier of the product from source system."
+        tests:
+          - unique
+          - not_null
+      - name: product_category_name
+        description: "Name of the product's category."
+      - name: product_weight_g
+        description: "Weight of the product in grams."
+      - name: product_length_cm
+        description: "Length of the product in centimeters."
+      - name: product_height_cm
+        description: "Height of the product in centimeters."
+      - name: product_width_cm
+        description: "Width of the product in centimeters."
+      - name: dbt_valid_from
+        description: "Timestamp when this product version became valid (SCD2 start)."
+      - name: dbt_valid_to
+        description: "Timestamp when this product version ceased to be valid (SCD2 end)."

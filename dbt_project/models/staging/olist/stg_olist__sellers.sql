@@ -1,10 +1,15 @@
-WITH src_sellers AS (
-    SELECT *
-    FROM {{ source('olist', 'sellers') }}
+with source_data as (
+    select
+        seller_id,
+        seller_zip_code_prefix,
+        seller_city,
+        seller_state
+    from {{ source('olist', 'sellers') }}
 )
-SELECT
+
+select
     seller_id,
     seller_zip_code_prefix,
     seller_city,
     seller_state
-FROM src_sellers
+from source_data

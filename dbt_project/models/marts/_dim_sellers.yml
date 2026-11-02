@@ -1,0 +1,23 @@
+version: 2
+models:
+  - name: dim_sellers
+    description: "Dimension table containing seller attributes with historical tracking (SCD Type 2)."
+    columns:
+      - name: seller_sk
+        description: "Surrogate key generated from seller_id and dbt_valid_from to uniquely identify each seller record version."
+        tests:
+          - unique
+          - not_null
+      - name: seller_id
+        description: "Natural identifier of the seller from the source system."
+        tests:
+          - unique
+          - not_null
+      - name: seller_city
+        description: "City where the seller is located."
+      - name: seller_state
+        description: "State where the seller is located."
+      - name: dbt_valid_from
+        description: "Timestamp when this version of the seller record became valid."
+      - name: dbt_valid_to
+        description: "Timestamp when this version of the seller record ceased to be valid (or future date for current version)."

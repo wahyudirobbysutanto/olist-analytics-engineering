@@ -41,10 +41,14 @@ SELECT
 FROM olist__order_items oi
 INNER JOIN olist__orders o ON o.order_id = oi.order_id
 INNER JOIN dim_customers c ON o.customer_id = c.customer_id
+    AND o.order_purchase_timestamp >= c.dbt_valid_from 
+    AND (o.order_purchase_timestamp < c.dbt_valid_to OR c.dbt_valid_to IS NULL)
 INNER JOIN dim_products p ON oi.product_id = p.product_id
     AND o.order_purchase_timestamp >= p.dbt_valid_from 
     AND (o.order_purchase_timestamp < p.dbt_valid_to OR p.dbt_valid_to IS NULL)
 INNER JOIN dim_sellers s ON oi.seller_id = s.seller_id
+    AND o.order_purchase_timestamp >= s.dbt_valid_from 
+    AND (o.order_purchase_timestamp < s.dbt_valid_to OR s.dbt_valid_to IS NULL)
 {% if is_incremental() %}
   WHERE o.order_purchase_timestamp > (SELECT MAX(order_purchase_timestamp) FROM {{ this }})
 {% endif %}

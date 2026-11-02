@@ -1,0 +1,10 @@
+version: 2
+models:
+  - name: stg_olist__sellers
+    description: Staging model for Olist sellers data
+    columns:
+      - name: seller_id
+        description: Primary key for sellers
+        tests:
+          - unique
+          - not_null

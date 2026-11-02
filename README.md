@@ -46,7 +46,9 @@ olist-analytics/
 │   │   └── marts/      # star schema (dim_*, fact_*)
 │   ├── snapshots/      # SCD Type 2 history tracking
 │   └── tests/          # custom data tests
-├── ai_agent/           # Streamlit AI Data Analyst (Text-to-SQL)
+├── ai_agent/           # Streamlit AI Data Analyst & Auto-DBT Co-Pilot
+│   ├── app.py          # Text-to-SQL App
+│   └── auto_dbt.py     # Auto-Generator & Auto-Healing Agent
 ├── sql_script/         # Database setup scripts (Read-only user & AI history)
 ├── data/               # local only, gitignored (see Data Setup)
 ├── images/             # Dashboard screenshots for README
@@ -87,6 +89,7 @@ cd dbt_project && dbt build
 - [x] **Phase 5A: Advanced Modeling** (Snapshots / SCD Type 2)
 - [x] **Phase 5B: AI Agent Layer** (Auto-Insights & Text-to-SQL)
 - [x] **Phase 5C: Data Lineage & Documentation** (dbt Docs hosted on GitHub Pages)
+- [x] **Phase 5D: AI Co-Pilot Layer** (Auto-DBT Generation & Auto-Healing)
 - [ ] **Phase 6: Cloud Migration** (BigQuery/Snowflake)
 
 Progress is tracked via pull requests — each phase is a PR with design decisions and trade-offs documented.
@@ -140,12 +143,39 @@ To push the boundaries of modern Data Engineering, I integrated an **Agentic AI 
 - **Multi-Provider Resiliency:** Built with LangChain `with_fallbacks`, ensuring high availability by automatically switching from Google Gemini to Groq (Llama 3.3) if rate limits are hit.
 - **Interactive History:** All queries and auto-generated insights are saved to PostgreSQL and can be re-run from an interactive UI.
 
+
 ### How to Run:
 1. Create the read-only AI user and history tables by running `sql_script/create_read_only_user.sql`.
 2. Add your `GEMINI_API_KEY` and `GROQ_API_KEY` to `.env`.
 3. Run the Streamlit app:
 ```bash
 streamlit run ai_agent/app.py
+```
+
+## 🤖 Phase 5D: The AI Co-Pilot (Auto-DBT Agent)
+
+While Phase 5B handles business queries, Phase 5D focuses on **Agentic Data Engineering**. I built an autonomous AI Agent (`ai_agent/auto_dbt.py`) that acts as a Junior Data Engineer, capable of writing and fixing dbt models directly inside the project folder.
+
+### Features:
+- **Auto-Generation:** The agent introspects the `raw` PostgreSQL schema and writes boilerplate `stg_*.sql` models and `schema.yml` tests.
+- **Marts Documentation:** It reads human-written SQL files in the `marts/` folder (e.g., `fact_orders.sql`) and automatically generates comprehensive descriptions and data tests.
+- **Auto-Healing Loop:** When `dbt build` fails, the agent captures the exact error log, feeds it back to the LLM, and rewrites the broken file. It retries up to 3 times.
+- **Strict Guardrails:** Uses Few-Shot Prompting and Database Relational Concepts to prevent the AI from generating invalid SQL (e.g., preventing `unique` tests on Sequence IDs or `not_null` tests on pending delivery dates).
+- **Secure Execution:** The agent operates using a dedicated `dbt_agent_user` (read-only on `raw`, write-only on `staging`/`marts`), ensuring the AI can never drop raw data.
+
+### How to Run the AI Co-Pilot:
+```bash
+# Generate Staging Models & Tests
+python ai_agent/auto_dbt.py --mode staging
+
+# Generate SCD Type 2 Snapshots
+python ai_agent/auto_dbt.py --mode snapshots
+
+# Generate YAML Tests & Docs for Marts
+python ai_agent/auto_dbt.py --mode marts
+
+# Run Auto-Healer manually if anything fails
+python ai_agent/auto_dbt.py --mode heal
 ```
 
 

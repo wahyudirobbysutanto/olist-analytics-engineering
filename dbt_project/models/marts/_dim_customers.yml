@@ -1,0 +1,33 @@
+version: 2
+models:
+  - name: dim_customers
+    description: "Dimension table containing customer attributes with slowly changing dimensions (SCD2) tracking validity periods."
+    columns:
+      - name: customer_sk
+        description: "Surrogate key generated from customer_id and dbt_valid_from to uniquely identify each version of a customer."
+        tests:
+          - unique
+          - not_null
+      - name: customer_id
+        description: "Natural business key for the customer, sourced from the original Olist customers dataset."
+        tests:
+          - unique
+          - not_null
+      - name: customer_unique_id
+        description: "Unique identifier for the customer provided by Olist (may be a UUID)."
+        tests: []
+      - name: customer_zip_code_prefix
+        description: "First five digits of the customer's zip code."
+        tests: []
+      - name: customer_city
+        description: "City where the customer resides."
+        tests: []
+      - name: customer_state
+        description: "State (abbreviation) where the customer resides."
+        tests: []
+      - name: dbt_valid_from
+        description: "Timestamp indicating when this version of the customer record became valid."
+        tests: []
+      - name: dbt_valid_to
+        description: "Timestamp indicating when this version of the customer record ceased to be valid (or null for current)."
+        tests: []

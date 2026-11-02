@@ -1,0 +1,14 @@
+version: 2
+models:
+  - name: stg_olist__orders
+    description: "Staging model for Olist orders"
+    columns:
+      - name: order_id
+        description: "Primary key for orders"
+        tests:
+          - unique
+          - not_null
+      - name: customer_id
+        description: "Foreign key to customers"
+        tests:
+          - not_null

@@ -1,0 +1,11 @@
+version: 2
+models:
+  - name: stg_olist__payments
+    description: Staging model for Olist payments
+    columns:
+      - name: order_id
+        tests:
+          - not_null
+      - name: payment_value
+        tests:
+          - not_null

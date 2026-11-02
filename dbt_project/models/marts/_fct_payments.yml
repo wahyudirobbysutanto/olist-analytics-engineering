@@ -1,0 +1,25 @@
+version: 2
+models:
+  - name: fct_payments
+    description: "Fact table containing payment details for each order."
+    columns:
+      - name: order_id
+        description: "Identifier of the order associated with the payment."
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_orders')
+              field: order_id
+      - name: payment_sequential
+        description: "Sequential number of the payment for the order."
+        tests:
+          - not_null
+      - name: payment_type
+        description: "Type of payment (e.g., credit card, boleto)."
+        tests: []
+      - name: payment_installments
+        description: "Number of installments for the payment."
+        tests: []
+      - name: payment_value
+        description: "Monetary value of the payment."
+        tests: []
